@@ -6,9 +6,36 @@
 
 using namespace std;
 
+
+//sees if a given ray hits(intersects) a 3d sphere
+//this is a quadratic equation
+double hit_sphere(const point& center, double radius, ray r) {
+    triple oc = r.get_origin() - center;
+    auto a = dot(r.get_direction(), r.get_direction());
+    auto b = 2.0 * dot(oc, r.get_direction());
+    auto c = dot(oc, oc) - radius*radius;
+    auto discriminant = b*b - 4*a*c;
+    //if discriminant >= 0, there exists a solution
+    if (discriminant < 0) {
+        return -1.0;
+    } else {
+        //There exists two answers to this equation
+        //Return the smallest one, which is the point the camera "sees"
+        return (-b - sqrt(discriminant) ) / (2.0*a);
+    }
+}
 pixel ray_color(ray& r) {
+    //checking if ray hits sphere
+    auto sphere_center = point(0,0,-1);
+    auto t = hit_sphere(sphere_center, 0.6, r);
+    if (t > 0){
+        //normal_ray is a normal(perpendicular) ray at the point the ray hits the sphere
+        triple normal_ray = unit_vector(r.at(t) - sphere_center);
+        return 0.5*pixel(normal_ray[0]+1, normal_ray[1]+1, normal_ray[2]+1);
+    }
+
     triple unit_direction = unit_vector(r.get_direction());
-    auto t = 0.5 * (unit_direction[1] + 1.0);
+    t = 0.5 * (unit_direction[1] + 1.0);
     return (1.0 - t) * triple(0.1, 0, 0.6) + t * triple(0.9, 1, 0.1);
 }
 

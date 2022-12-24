@@ -79,7 +79,7 @@ inline triple operator/(const triple &left, double right){
 
 inline double dot(const triple &left, const triple &right){
     return left[0] * right[0]
-         * left[1] * right[1]
+         + left[1] * right[1]
          + left[2] * right[2];
 }
 
