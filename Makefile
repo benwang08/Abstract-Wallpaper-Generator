@@ -14,5 +14,11 @@ main.o: main.cpp ray.h triple.h
 triple.o: triple.cpp triple.h 
 	$(CC) -c triple.cpp
 
+sphere.o: sphere.cpp sphere.h
+	$(CC) -c sphere.cpp
+
+entity_list.o: entity_list.cpp entity_list.h
+	$(CC) -c entity_list.cpp
+
 clean: 
-	-rm -f generator main.o triple.o image.ppm
+	-rm -f generator main.o triple.o sphere.o entity_list.o image.ppm 

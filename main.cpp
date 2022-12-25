@@ -3,6 +3,8 @@
 #include <iostream>
 #include "triple.h"
 #include "ray.h"
+#include "sphere.h"
+#include "entity_list.h"
 
 using namespace std;
 

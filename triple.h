@@ -4,6 +4,7 @@
 #include <cmath>
 #include <vector>
 #include <iostream>
+#include <limits>
 
 using namespace std;
 
@@ -93,6 +94,13 @@ inline triple unit_vector(triple v){
     return v / v.length();
 }
 
+//Declaring useful constants/functions
 
+const double PI = atan(1) * 4;
+const double INF = numeric_limits<double>::infinity();
+
+inline double deg_to_rad(double degrees){
+    return degrees * PI / 180.0;
+}
 
 #endif

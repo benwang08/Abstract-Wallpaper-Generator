@@ -26,7 +26,8 @@ bool sphere::hit(ray r, double t_min, double t_max, hit_record& rec) {
 
     rec.t = root;
     rec.p = r.at(rec.t);
-    rec.normal = (rec.p - center) / radius;
+    triple normal = (rec.p - center) / radius;
+    rec.init_normal(normal, r);
 
     return true;
 }
