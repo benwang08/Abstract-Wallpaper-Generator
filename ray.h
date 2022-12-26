@@ -20,7 +20,7 @@ class ray{
             return origin;
         }
 
-        triple get_direction(){
+        triple get_direction() const{
             return direction;
         }
 

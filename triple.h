@@ -5,6 +5,8 @@
 #include <vector>
 #include <iostream>
 #include <limits>
+#include <assert.h>
+#include "utility.h"
 
 using namespace std;
 
@@ -20,6 +22,12 @@ class triple{
         //Getters
         vector<double> get_vec();
         double operator[](int in) const{
+            return vec[in];
+        }
+
+        double& mod_value(int in){
+            assert(in >= 0 && in <= 3);
+
             return vec[in];
         }
 
@@ -43,14 +51,6 @@ using pixel = triple;
 //More helper functions for arithmetic involving 2 triples
 inline std::ostream& operator<<(std::ostream &out, triple &v){
     return out << v[0] << ' ' << v[1] << ' ' << v[2];
-}
-
-//This function rounds to int(0-255) for output to .ppm file
-inline void print_ppm(std::ostream &out, pixel &p){
-    // Write the translated [0,255] value of each color component.
-    out << static_cast<int>(255.999 * p[0]) << ' '
-        << static_cast<int>(255.999 * p[1]) << ' '
-        << static_cast<int>(255.999 * p[2]) << '\n';
 }
 
 inline triple operator+(const triple &left, const triple &right){
@@ -94,13 +94,31 @@ inline triple unit_vector(triple v){
     return v / v.length();
 }
 
-//Declaring useful constants/functions
-
-const double PI = atan(1) * 4;
-const double INF = numeric_limits<double>::infinity();
-
-inline double deg_to_rad(double degrees){
-    return degrees * PI / 180.0;
+//returns random triple with vals between 0 and 1
+inline static triple random_triple() {
+    return triple(random_double(), random_double(), random_double());
 }
+
+//returns random triple with vals between min and max
+inline static triple random_triple(double min, double max) {
+    return triple(random_double(min,max), random_double(min,max), random_double(min,max));
+}
+
+//returns random point in a unit sphere (radius = 1)
+inline triple random_in_unit_sphere() {
+    while (true) {
+        //select a random point
+        auto p = random_triple(-1,1);
+
+        //if point is not in unit circle, continue without returning
+        if (pow(p.length(), 2) >= 1){
+            continue;
+        }
+
+        //point is in unit circle
+        return p;
+    }
+}
+
 
 #endif
