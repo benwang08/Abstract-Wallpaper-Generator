@@ -12,6 +12,9 @@ using namespace std;
 //ray includes a triple for its point of origin and for its direction
 class ray{
     public:
+        ray(){
+            
+        }
         ray(point &p, triple d) :
             origin(p.get_vec()), direction(d.get_vec())
         {}

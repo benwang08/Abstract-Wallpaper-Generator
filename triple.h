@@ -6,7 +6,6 @@
 #include <iostream>
 #include <limits>
 #include <assert.h>
-#include "utility.h"
 
 using namespace std;
 
@@ -94,31 +93,11 @@ inline triple unit_vector(triple v){
     return v / v.length();
 }
 
-//returns random triple with vals between 0 and 1
-inline static triple random_triple() {
-    return triple(random_double(), random_double(), random_double());
+//calculate reflection off metal material using vector math
+inline triple reflect(triple v, triple n) {
+    return v - 2*dot(v,n)*n;
 }
 
-//returns random triple with vals between min and max
-inline static triple random_triple(double min, double max) {
-    return triple(random_double(min,max), random_double(min,max), random_double(min,max));
-}
-
-//returns random point in a unit sphere (radius = 1)
-inline triple random_in_unit_sphere() {
-    while (true) {
-        //select a random point
-        auto p = random_triple(-1,1);
-
-        //if point is not in unit circle, continue without returning
-        if (pow(p.length(), 2) >= 1){
-            continue;
-        }
-
-        //point is in unit circle
-        return p;
-    }
-}
 
 
 #endif

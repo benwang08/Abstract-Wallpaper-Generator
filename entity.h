@@ -2,6 +2,13 @@
 #define entity_h
 
 #include "ray.h"
+#include "utility.h"
+#include <memory>
+
+using namespace std;
+
+//forward declaration
+class material;
 
 struct hit_record {
     point p;
@@ -10,6 +17,9 @@ struct hit_record {
 
     //Records whether the ray hits an outside surface or inside surface
     bool hits_outside;
+
+    //ptr to material class
+    shared_ptr<material> mat_ptr;
 
     //normal is always initialized against the ray direction
     void init_normal(triple normal_in, ray r){

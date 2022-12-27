@@ -2,6 +2,11 @@
 #include <vector>
 #include <iostream>
 #include "utility.h"
+#include "material.h"
+#include "ray.h"
+#include "entity_list.h"
+#include "sphere.h"
+#include "camera.h"
 
 using namespace std;
 
@@ -13,9 +18,15 @@ pixel ray_color(const ray& r, entity_list& world, int depth) {
 
     //checking if ray hits any part of world
     hit_record h_record;
-    if (world.hit(r, 0, INF, h_record)){
-        triple target = h_record.p + h_record.normal + random_in_unit_sphere();
-        return 0.5 * ray_color(ray(h_record.p, target - h_record.p), world, depth - 1);
+    if (world.hit(r, 0.001, INF, h_record)){
+        ray scattered;
+        pixel attenuation;
+
+        if (h_record.mat_ptr->scatter(r, h_record, attenuation, scattered))
+            return attenuation * ray_color(scattered, world, depth-1);
+
+        return pixel(0,0,0);
+
     }
     triple unit_direction = unit_vector(r.get_direction());
     auto t = 0.5 * (unit_direction[1] + 1.0);
@@ -32,8 +43,15 @@ int main() {
 
     //World (objects in the landscape)
     entity_list world;
-    world.add(make_shared<sphere>(triple(0,0,-1), 0.5));
-    world.add(make_shared<sphere>(triple(0,-100.5,-1), 100));
+    auto material_ground = make_shared<diffuse>(pixel(0.8, 0.8, 0.0));
+    auto material_center = make_shared<diffuse>(pixel(0.7, 0.3, 0.3));
+    auto material_left   = make_shared<metal>(pixel(0.8, 0.8, 0.8));
+    auto material_right  = make_shared<metal>(pixel(0.8, 0.6, 0.2));
+
+    world.add(make_shared<sphere>(triple( 0.0, -100.5, -1.0), 100.0, material_ground));
+    world.add(make_shared<sphere>(triple( 0.0,    0.0, -1.0),   0.5, material_center));
+    world.add(make_shared<sphere>(triple(-1.0,    0.0, -1.0),   0.5, material_left));
+    world.add(make_shared<sphere>(triple( 1.0,    0.0, -1.0),   0.5, material_right));
 
     //Camera and viewport
     camera cam;

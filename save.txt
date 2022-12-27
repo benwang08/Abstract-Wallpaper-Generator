@@ -1,0 +1,51 @@
+CC = g++
+
+generator: main.o triple.o entity_list.o sphere.o
+	$(CC) -o generator main.o triple.o entity_list.o sphere.o
+
+image: generator
+	./generator > image.ppm
+	xdg-open image.ppm
+
+main.o: main.cpp ray.h triple.h
+	$(CC) -c main.cpp
+
+triple.o: triple.cpp triple.h 
+	$(CC) -c triple.cpp
+
+sphere.o: sphere.cpp sphere.h
+	$(CC) -c sphere.cpp
+
+entity_list.o: entity_list.cpp entity_list.h
+	$(CC) -c entity_list.cpp
+
+clean: 
+	-rm -f generator main.o triple.o sphere.o entity_list.o image.ppm 
+
+
+
+OBJS	= entity_list.o main.o sphere.o triple.o
+SOURCE	= entity_list.cpp main.cpp sphere.cpp triple.cpp
+HEADER	= camera.h entity_list.h entity.h material.h ray.h sphere.h triple.h utility.h
+OUT	= generator
+CC	 = g++
+FLAGS	 =
+LFLAGS	 = 
+
+generator: $(OBJS)
+	$(CC) -g $(OBJS) -o $(OUT) $(LFLAGS)
+
+entity_list.o: entity_list.cpp
+	$(CC) $(FLAGS) entity_list.cpp 
+
+main.o: main.cpp
+	$(CC) $(FLAGS) main.cpp 
+
+sphere.o: sphere.cpp
+	$(CC) $(FLAGS) sphere.cpp 
+
+triple.o: triple.cpp
+	$(CC) $(FLAGS) triple.cpp 
+
+clean:
+	rm -f $(OBJS) $(OUT)
