@@ -98,6 +98,14 @@ inline triple reflect(triple v, triple n) {
     return v - 2*dot(v,n)*n;
 }
 
+//function to calculate ray refraction
+//etai_over_etat is a variable dependant on the material
+triple refract(triple uv, triple n, double etai_over_etat) {
+    auto cos_theta = fmin(dot(-uv, n), 1.0);
+    triple r_out_perp =  etai_over_etat * (uv + cos_theta*n);
+    triple r_out_parallel = -sqrt(fabs(1.0 - pow(r_out_perp.length(),2))) * n;
+    return r_out_perp + r_out_parallel;
+}
 
 
 #endif
