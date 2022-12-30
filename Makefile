@@ -1,24 +1,28 @@
 CC = g++
+CFLAGS = -g -Wall 
 
 generator: main.o triple.o entity_list.o sphere.o
-	$(CC) -o generator main.o triple.o entity_list.o sphere.o
+	$(CC) $(CFLAGS) -o generator main.o triple.o entity_list.o sphere.o
 
 image: generator
 	./generator > image.ppm
 	xdg-open image.ppm
 
 main.o: main.cpp ray.h triple.h
-	$(CC) -c main.cpp
+	$(CC) $(CFLAGS) -c main.cpp
 
 triple.o: triple.cpp triple.h 
-	$(CC) -c triple.cpp
+	$(CC) $(CFLAGS) -c triple.cpp
 
 sphere.o: sphere.cpp sphere.h
-	$(CC) -c sphere.cpp
+	$(CC) $(CFLAGS) -c sphere.cpp
 
 entity_list.o: entity_list.cpp entity_list.h
-	$(CC) -c entity_list.cpp
+	$(CC) $(CFLAGS) -c entity_list.cpp
 
+scan: scan.cpp
+	$(CC) $(CFLAGS) -o scan scan.cpp
+	
 clean: 
-	-rm -f generator main.o triple.o sphere.o entity_list.o image.ppm 
+	-rm -f generator main.o triple.o sphere.o entity_list.o image.ppm scan data.txt test.ppm
 

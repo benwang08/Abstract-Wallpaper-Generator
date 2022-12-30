@@ -8,8 +8,8 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/generator",
-            "args": [],
+            "program": "${workspaceFolder}/scan",
+            "args": ["lakers.jpg", "1920", "1080", ">", "test.ppm"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
@@ -28,7 +28,6 @@
                 }
             ]
         }
-
 
     ]
 }

@@ -84,4 +84,13 @@ inline bool near_zero(triple t) {
     return (fabs(t[0]) < s) && (fabs(t[1]) < s) && (fabs(t[2]) < s);
 }
 
+inline triple random_in_unit_disk() {
+    while (true) {
+        auto p = triple(random_double(-1,1), random_double(-1,1), 0);
+        if (pow(p.length(), 2) >= 1) continue;
+        return p;
+    }
+}
+
+
 #endif

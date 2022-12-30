@@ -13,9 +13,9 @@ using namespace std;
 class ray{
     public:
         ray(){
-            
+
         }
-        ray(point &p, triple d) :
+        ray(point p, triple d) :
             origin(p.get_vec()), direction(d.get_vec())
         {}
 
