@@ -9,40 +9,30 @@ using namespace std;
 
 typedef pair<int, long> pi;
 //rounds to nearest 10
-inline int round(int in){
-    string temp = to_string(in);
-    char last_char = temp[temp.size() - 1];
-    int last = last_char - '0';
+inline int round(int in, int round){
+    int base = in / round;
+    base *= round;
 
-    int base = in / 5;
-    base *= 5;
-    if (last == 5 || last == 0){
-        return in;
-    }
-    if (last == 3 || last == 4 || last == 8 || last == 9){
-        return base + 5;
-    }
-    return base;
-}
+    int half = round / 2;
+    int temp = in - base;
 
-inline int round_ten(int in){
-    int base = in / 10;
-    int rem = in - base;
-    if (rem >= 5){
-        return base + 10;
+    if (temp > half){
+        return base + round;
     }
-    return base;
+    else{
+        return base;
+    }
 }
 
 string pixel_to_str(int in){
-    return to_string(in) + "1";
+    return to_string(in) + "p";
 }
 
 vector<int> str_to_pixels(string in){
     string temp = "";
     vector<int> rgb;
     for(int i = 0; i < in.size(); i++){
-        if (in[i] == '1'){
+        if (in[i] == 'p'){
             if (temp == ""){
                 temp += in[i];
                 continue;
@@ -59,6 +49,7 @@ vector<int> str_to_pixels(string in){
 }
 
 int main(int argc, char *argv[]){
+    int PIXEL_ROUND = 50;
     //command line parsing and checking
     string temp_fname = argv[1];
     int width = stoi(argv[2]);
@@ -87,9 +78,9 @@ int main(int argc, char *argv[]){
     int r, g, b;
     while(!fs.eof()){
         fs >> r >> g >> b;
-        string r_string = pixel_to_str(round_ten(r));
-        string g_string = pixel_to_str(round_ten(g));
-        string b_string = pixel_to_str(round_ten(b));
+        string r_string = pixel_to_str(round(r, PIXEL_ROUND));
+        string g_string = pixel_to_str(round(g, PIXEL_ROUND));
+        string b_string = pixel_to_str(round(b, PIXEL_ROUND));
         string hash_string = r_string + g_string + b_string;
 
         if (pixels.find(hash_string) == pixels.end()){
@@ -102,13 +93,14 @@ int main(int argc, char *argv[]){
     fs.close();
 
     int total = 0;
-    priority_queue<pi, vector<pi>, greater<pi>> pq;
-
+    priority_queue<int, vector<int>, greater<int>> pq;
+    unordered_map<int, vector<int>> pixel_counts;
     for (auto& it: pixels){
         if (pq.size() >= 30){
-            int comp = pq.top().first;
-            if (it.second > pq.top().first){
-                total -= pq.top().first;
+            int comp = pq.top();
+            if (it.second > pq.top()){
+                total -= pq.top();
+                pixel_counts.erase(pq.top());
                 pq.pop();
             }
             else{
@@ -116,18 +108,18 @@ int main(int argc, char *argv[]){
             }
         }
         total += it.second;
-        pair<int, long> temp(it.second, stol(it.first));
-        pq.push(temp);
+        pixel_counts[it.second] = str_to_pixels(it.first);
+        pq.push(it.second);
     }
-    priority_queue<pi, vector<pi>, greater<pi>> copy = pq;
+    priority_queue<int, vector<int>, greater<int>> copy = pq;
 
     std::cout << "P3\n" << 100 << ' ' << 1500 << "\n255\n";
 
-    vector<int> color = str_to_pixels(to_string(copy.top().second));
+    vector<int> color = pixel_counts[copy.top()];
     copy.pop();
     for (int j = 1499; j >= 0; --j) {
         if (j % 50 == 0){
-            color = str_to_pixels(to_string(copy.top().second));
+            color = pixel_counts[copy.top()];
             copy.pop();
         }
         for (int i = 0; i < 100; i++) {
@@ -138,9 +130,10 @@ int main(int argc, char *argv[]){
     }
 
     ofstream of("data.txt");
+    of << width << " " << height << endl;
     while(!pq.empty()){
-        double percent = pq.top().first / double(total);
-        vector<int> color = str_to_pixels(to_string(pq.top().second));
+        double percent = pq.top() / double(total);
+        vector<int> color = pixel_counts[pq.top()];
 
         of << color[0] << " " << color[1] << " " << color[2] << " ";
         of << percent << endl;

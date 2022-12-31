@@ -7,8 +7,28 @@
 #include "entity_list.h"
 #include "sphere.h"
 #include "camera.h"
+#include <fstream>
+#include <unordered_map>
+#include <thread>
+#include <mutex>
+#include <queue>
+#include <condition_variable>
 
 using namespace std;
+
+
+//thread variables
+void calculate_pixel(const int num_samples, camera* cam, entity_list* world, int image_width,
+                    int image_height, const int max_ray_depth);
+bool DONE = false;
+mutex mx;
+condition_variable cv;
+condition_variable wait_for_jobs;
+queue<vector<int>> jobs;
+vector<vector<pixel>> IMAGE_STORE;
+int done = 0;
+
+
 
 entity_list random_scene() {
     entity_list world;
@@ -79,11 +99,33 @@ pixel ray_color(const ray& r, entity_list& world, int depth) {
 
 int main() {
 
+    //read in data
+    fstream fs("data.txt");
+
+    int image_width;
+    int image_height;
+
+    fs >> image_width >> image_height;
+
+    vector<pixel> color_palette;
+    while (!fs.eof()){
+        int r, g, b;
+        double prob;
+        fs >> r >> g >> b >> prob;
+        int entries = int(prob * 100.0);
+        entries++;
+        
+        pixel temp(r, g, b);
+        for (int i = 0; i < entries; i++){
+            color_palette.push_back(temp);
+        }
+    }
+
+    fs.close();
+
     //Image description
-    const double aspect_ratio = 16.0/9.0;
-    const int image_width = 400;
-    const int image_height = 225;
-    const int num_samples = 10;
+    const double aspect_ratio = double(image_width)/image_height;
+    const int num_samples = 600;
     const int max_ray_depth = 50;
 
     //World (objects in the landscape)
@@ -98,19 +140,93 @@ int main() {
     camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus);
 
     // Render
-    std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+
+    //store calculations from threads in a 2d vector
+    vector<pixel> vec_width(image_width, pixel(0,0,0));
+    vec_width.reserve(image_width);
+
+    IMAGE_STORE.resize(image_height, vec_width);
+    cerr << IMAGE_STORE.size();
+    cerr << " " << IMAGE_STORE[0].size();
+
+    //start 12 worker threads
+    for(int i = 0; i < 12; i++){
+        thread temp = thread(calculate_pixel, num_samples, &cam, &world, 
+                            image_width, image_height, max_ray_depth);
+        temp.detach();
+    }
 
     for (int j = image_height-1; j >= 0; --j) {
         for (int i = 0; i < image_width; i++) {
-            cerr << "PRINTING PIXEL " << j << " " << i << endl;
-            pixel pixel_color(0, 0, 0);
-            for (int s = 0; s < num_samples; ++s) {
-                auto u = (i + random_double()) / (image_width-1);
-                auto v = (j + random_double()) / (image_height-1);
-                ray r = cam.get_ray(u, v);
-                pixel_color += ray_color(r, world, max_ray_depth).get_vec();
-            }
-            print_ppm(std::cout, pixel_color, num_samples);
+            jobs.push({j, i});
+            cv.notify_one();
         }
+    } 
+    DONE = true;
+
+    unique_lock<mutex> guard(mx);
+
+    while(done < 12){
+        wait_for_jobs.wait(guard);
     }
+
+
+    ofstream of("wallpaper.ppm");
+    of << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+
+    for (int j = image_height-1; j >= 0; --j) {
+        for (int i = 0; i < image_width; i++) {
+            print_ppm(of, IMAGE_STORE[j][i], num_samples);
+        }
+    } 
+
+    of.close();
+
+}
+
+void calculate_pixel(const int num_samples, camera* cam, entity_list* world, int image_width,
+                    int image_height, const int max_ray_depth){
+
+    int i = -1;
+    int j = -1;
+
+    while(true){
+        unique_lock<mutex> guard(mx);
+
+        while(jobs.empty()){
+            if (DONE){
+                done++;
+                wait_for_jobs.notify_one();
+                return;
+            }
+            cv.wait(guard);
+        }
+
+        vector<int> i_j = jobs.front();
+        i = i_j[1];
+        j = i_j[0];
+
+        cerr << "CALCULATING PIXEL " << j << " " << i << endl;
+
+        jobs.pop();
+        guard.unlock();
+
+        //run job and put calculated pixel into 2d vector
+        pixel pixel_color(0, 0, 0);
+        for (int s = 0; s < num_samples; ++s) {
+            auto u = (i + random_double()) / (image_width-1);
+            auto v = (j + random_double()) / (image_height-1);
+            ray r = cam->get_ray(u, v);
+            pixel_color += ray_color(r, *world, max_ray_depth).get_vec();
+        }
+
+        try{
+            IMAGE_STORE[j][i] = pixel_color;
+        }
+        catch(int ja){
+            cerr << j << ' ' << i;
+        }
+
+    }
+
 }
