@@ -182,7 +182,7 @@ int main() {
 
     //Image description
     const double aspect_ratio = double(image_width)/image_height;
-    const int num_samples = 50;
+    const int num_samples = 500;
     const int max_ray_depth = 50;
 
     //World (objects in the landscape)
