@@ -49,7 +49,7 @@ vector<int> str_to_pixels(string in){
 }
 
 int main(int argc, char *argv[]){
-    int PIXEL_ROUND = 50;
+    int PIXEL_ROUND = 40;
     //command line parsing and checking
     string temp_fname = argv[1];
     int width = stoi(argv[2]);

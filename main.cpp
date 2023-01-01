@@ -72,10 +72,12 @@ entity_list random_scene(vector<pixel> &color_palette) {
  
     }
 
+    int threshold = random_double(80, 95);
+
     for (int a = -13; a < 15; a++) {
         for (int b = -13; b < 15; b++) {
             auto choose = random_double(1,100);
-            if (choose < 80){
+            if (choose < threshold){
                 continue;
             }
             point center(a + 0.8*random_double(), (a+b)/2.0 + 0.8 *random_double(), b + 0.8*random_double());
@@ -167,6 +169,10 @@ int main() {
         entries++;
         
         pixel temp(r/255.0, g/255.0, b/255.0);
+        //push_back 10 if color is black or white
+        if (entries > 10){
+            entries = 10;
+        }
         for (int i = 0; i < entries; i++){
             color_palette.push_back(temp);
         }
@@ -176,7 +182,7 @@ int main() {
 
     //Image description
     const double aspect_ratio = double(image_width)/image_height;
-    const int num_samples = 600;
+    const int num_samples = 50;
     const int max_ray_depth = 50;
 
     //World (objects in the landscape)
@@ -198,8 +204,8 @@ int main() {
     vec_width.reserve(image_width);
 
     IMAGE_STORE.resize(image_height, vec_width);
-    cerr << IMAGE_STORE.size();
-    cerr << " " << IMAGE_STORE[0].size();
+    std::cerr << IMAGE_STORE.size();
+    std::cerr << " " << IMAGE_STORE[0].size();
 
     //start 12 worker threads
     for(int i = 0; i < 12; i++){
@@ -258,7 +264,7 @@ void calculate_pixel(const int num_samples, camera* cam, entity_list* world, int
         i = i_j[1];
         j = i_j[0];
 
-        cerr << "CALCULATING PIXEL " << j << " " << i << endl;
+        std::cerr << "CALCULATING PIXEL " << j << " " << i << endl;
 
         jobs.pop();
         guard.unlock();
@@ -274,9 +280,10 @@ void calculate_pixel(const int num_samples, camera* cam, entity_list* world, int
 
         try{
             IMAGE_STORE[j][i] = pixel_color;
+            cout << pixel_color[0] << pixel_color[1] << pixel_color[2] << endl;
         }
         catch(int ja){
-            cerr << j << ' ' << i;
+            std::cerr << j << ' ' << i;
         }
 
     }
