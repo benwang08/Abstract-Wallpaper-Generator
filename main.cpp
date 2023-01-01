@@ -29,49 +29,100 @@ vector<vector<pixel>> IMAGE_STORE;
 int done = 0;
 
 
+//get random material, more likely to return matte
+int get_material(){
+    int seed = int(random_double(0,101));
 
-entity_list random_scene() {
+    if (seed < 70){
+        return 1;
+    }
+    if (seed < 85){
+        return 2;
+    }
+    return 3;
+
+}
+
+pixel get_color(vector<pixel> &color_palette){
+    int index = rand();
+    index = index % color_palette.size();
+    return color_palette[index];
+}
+
+entity_list random_scene(vector<pixel> &color_palette) {
     entity_list world;
 
-    auto ground_material = make_shared<diffuse>(pixel(0.5, 0.5, 0.5));
-    world.add(make_shared<sphere>(point(0,-1000,0), 1000, ground_material));
+    //make 1-3 ground materials
+    int num_ground = int(random_double(1, 3.3));
+    for(int i = 0; i < num_ground; i++){
+        int mat = get_material();
+        pixel color = get_color(color_palette);
+        if (mat == 1){
+            auto ground_material = make_shared<diffuse>(get_color(color_palette));
+            world.add(make_shared<sphere>(point(0, -1000,0), random_double(1000,1400), ground_material)); 
+        }
+        else if (mat == 2){
+            auto ground_material = make_shared<metal>(get_color(color_palette), 0.1);
+            world.add(make_shared<sphere>(point(0,0,1000), random_double(1000,1400), ground_material)); 
+        }
+        else{
+            auto ground_material = make_shared<glass>(1.5);
+            world.add(make_shared<sphere>(point(-500, 500,0), random_double(1000,1400), ground_material)); 
+        }
+ 
+    }
 
-    for (int a = -11; a < 11; a++) {
-        for (int b = -11; b < 11; b++) {
-            auto choose_mat = random_double();
-            point center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
-
-            if ((center - point(4, 0.2, 0)).length() > 0.9) {
-                shared_ptr<material> sphere_material;
-
-                if (choose_mat < 0.8) {
-                    // diffuse
-                    auto albedo = random_triple() * random_triple();
-                    sphere_material = make_shared<diffuse>(albedo);
-                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
-                } else if (choose_mat < 0.95) {
-                    // metal
-                    auto albedo = random_triple(.5, 1);
-                    auto fuzz = random_double(0, 0.5);
-                    sphere_material = make_shared<metal>(albedo, fuzz);
-                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
-                } else {
-                    // glass
-                    sphere_material = make_shared<glass>(1.5);
-                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
-                }
+    for (int a = -13; a < 15; a++) {
+        for (int b = -13; b < 15; b++) {
+            auto choose = random_double(1,100);
+            if (choose < 80){
+                continue;
             }
+            point center(a + 0.8*random_double(), (a+b)/2.0 + 0.8 *random_double(), b + 0.8*random_double());
+            int mat = get_material();
+            pixel color = get_color(color_palette);
+
+            double rad = random_double(0.1, 0.3);
+            if (mat == 1){
+                auto sphere_mat = make_shared<diffuse>(get_color(color_palette));
+                world.add(make_shared<sphere>(center, rad, sphere_mat));
+            }
+            else if (mat == 2){
+                auto fuzz = random_double(0, 0.7);
+                auto sphere_mat = make_shared<metal>(get_color(color_palette), fuzz);
+                world.add(make_shared<sphere>(center, rad, sphere_mat));       
+            }
+            else{
+                auto sphere_mat = make_shared<glass>(random_double(1,2));
+                world.add(make_shared<sphere>(center, rad, sphere_mat));       
+            }
+            
         }
     }
 
-    auto material1 = make_shared<glass>(1.5);
-    world.add(make_shared<sphere>(point(0, 1, 0), 1.0, material1));
+    int num_big = int(random_double(1, 4.1));
 
-    auto material2 = make_shared<diffuse>(pixel(0.4, 0.2, 0.1));
-    world.add(make_shared<sphere>(point(-4, 1, 0), 1.0, material2));
+    for(int i = 0; i < num_big; i++){
+        int mat = get_material();
+        pixel color = get_color(color_palette);
+        int x = random_double(1,4);
+        int y = random_double(1,4);
+        int z = random_double(1,4);
 
-    auto material3 = make_shared<metal>(pixel(0.7, 0.6, 0.5), 0.0);
-    world.add(make_shared<sphere>(point(4, 1, 0), 1.0, material3));
+        if (mat == 1){
+            auto big_mat = make_shared<diffuse>(get_color(color_palette));
+            world.add(make_shared<sphere>(point(x, y, z), random_double(0.6, 1.7), big_mat)); 
+        }
+        else if (mat == 2){
+            auto big_mat = make_shared<metal>(get_color(color_palette), 0.0);
+            world.add(make_shared<sphere>(point(x, y, z), random_double(0.6, 1.7), big_mat)); 
+        }
+        else{
+            auto big_mat = make_shared<glass>(1.5);
+            world.add(make_shared<sphere>(point(x, y, z), random_double(0.6, 1.7), big_mat)); 
+        }
+ 
+    }
 
     return world;
 }
@@ -109,13 +160,13 @@ int main() {
 
     vector<pixel> color_palette;
     while (!fs.eof()){
-        int r, g, b;
+        double r, g, b;
         double prob;
         fs >> r >> g >> b >> prob;
         int entries = int(prob * 100.0);
         entries++;
         
-        pixel temp(r, g, b);
+        pixel temp(r/255.0, g/255.0, b/255.0);
         for (int i = 0; i < entries; i++){
             color_palette.push_back(temp);
         }
@@ -129,15 +180,16 @@ int main() {
     const int max_ray_depth = 50;
 
     //World (objects in the landscape)
-    auto world = random_scene();
+    auto world = random_scene(color_palette);
 
     //Camera and viewport
-    point lookfrom(13,2,3);
+    point lookfrom(random_double(10,20), random_double(3,10), random_double(3,10));
     point lookat(0,0,0);
     triple vup(0,1,0);
     auto dist_to_focus = 10.0;
     auto aperture = 0.1;
-    camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus);
+    int zoom = int(random_double(40, 120));
+    camera cam(lookfrom, lookat, vup, zoom, aspect_ratio, aperture, dist_to_focus);
 
     // Render
 

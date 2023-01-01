@@ -113,7 +113,9 @@ int main(int argc, char *argv[]){
     }
     priority_queue<int, vector<int>, greater<int>> copy = pq;
 
-    std::cout << "P3\n" << 100 << ' ' << 1500 << "\n255\n";
+    ofstream img("color_palette.ppm");
+
+    img << "P3\n" << 100 << ' ' << 1500 << "\n255\n";
 
     vector<int> color = pixel_counts[copy.top()];
     copy.pop();
@@ -123,11 +125,13 @@ int main(int argc, char *argv[]){
             copy.pop();
         }
         for (int i = 0; i < 100; i++) {
-            cout << color[0] << " ";
-            cout << color[1] << " ";
-            cout << color[2] << endl;
+            img << color[0] << " ";
+            img << color[1] << " ";
+            img << color[2] << endl;
         }
     }
+
+    img.close();
 
     ofstream of("data.txt");
     of << width << " " << height << endl;
