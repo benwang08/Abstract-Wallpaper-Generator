@@ -29,7 +29,7 @@ vector<vector<pixel>> IMAGE_STORE;
 int done = 0;
 
 
-//get random material, more likely to return matte
+//get random material, more likely to return diffuse
 int get_material(){
     int seed = int(random_double(0,101));
 
@@ -52,55 +52,45 @@ pixel get_color(vector<pixel> &color_palette){
 entity_list random_scene(vector<pixel> &color_palette) {
     entity_list world;
 
-    //make 1-3 ground materials
-    int num_ground = int(random_double(1, 3.3));
+    int num_ground = int(random_double(1,2.9));
     for(int i = 0; i < num_ground; i++){
         int mat = get_material();
         pixel color = get_color(color_palette);
         if (mat == 1){
             auto ground_material = make_shared<diffuse>(get_color(color_palette));
-            world.add(make_shared<sphere>(point(0, -1000,0), random_double(1000,1400), ground_material)); 
+            world.add(make_shared<sphere>(point(0, random_double(-1000,-900),0), random_double(1000,1400), ground_material)); 
         }
-        else if (mat == 2){
+        if (mat == 2){
             auto ground_material = make_shared<metal>(get_color(color_palette), 0.1);
-            world.add(make_shared<sphere>(point(0,0,1000), random_double(1000,1400), ground_material)); 
-        }
-        else{
-            auto ground_material = make_shared<glass>(1.5);
-            world.add(make_shared<sphere>(point(-500, 500,0), random_double(1000,1400), ground_material)); 
-        }
- 
-    }
-
-    int threshold = random_double(80, 95);
-
-    for (int a = -13; a < 15; a++) {
-        for (int b = -13; b < 15; b++) {
-            auto choose = random_double(1,100);
-            if (choose < threshold){
-                continue;
-            }
-            point center(a + 0.8*random_double(), (a+b)/2.0 + 0.8 *random_double(), b + 0.8*random_double());
-            int mat = get_material();
-            pixel color = get_color(color_palette);
-
-            double rad = random_double(0.1, 0.3);
-            if (mat == 1){
-                auto sphere_mat = make_shared<diffuse>(get_color(color_palette));
-                world.add(make_shared<sphere>(center, rad, sphere_mat));
-            }
-            else if (mat == 2){
-                auto fuzz = random_double(0, 0.7);
-                auto sphere_mat = make_shared<metal>(get_color(color_palette), fuzz);
-                world.add(make_shared<sphere>(center, rad, sphere_mat));       
-            }
-            else{
-                auto sphere_mat = make_shared<glass>(random_double(1,2));
-                world.add(make_shared<sphere>(center, rad, sphere_mat));       
-            }
-            
+            world.add(make_shared<sphere>(point(0,0, random_double(-1000,-900)), random_double(1000,1400), ground_material)); 
         }
     }
+    for (int a = -11; a < 11; a++) {
+        for (int b = -11; b < 11; b++) {
+            auto choose_mat = random_double();
+            triple center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
+
+            if ((center - triple(4, 0.2, 0)).length() > 0.9) {
+                shared_ptr<material> sphere_material;
+                double rad = random_double(0.1 ,0.3);
+                if (choose_mat < 0.8) {
+                    // diffuse
+                    auto sphere_mat = make_shared<diffuse>(get_color(color_palette));
+                    world.add(make_shared<sphere>(center, rad, sphere_mat));
+                } else if (choose_mat < 0.95) {
+                    // metal
+                    auto fuzz = random_double(0, 0.7);
+                    auto sphere_mat = make_shared<metal>(get_color(color_palette), fuzz);
+                    world.add(make_shared<sphere>(center, rad, sphere_mat));     
+                } else {
+                    // glass
+                    auto sphere_mat = make_shared<glass>(random_double(1,2));
+                    world.add(make_shared<sphere>(center, rad, sphere_mat));    
+                }
+            }
+        }
+    }
+
 
     int num_big = int(random_double(1, 4.1));
 
@@ -113,18 +103,18 @@ entity_list random_scene(vector<pixel> &color_palette) {
 
         if (mat == 1){
             auto big_mat = make_shared<diffuse>(get_color(color_palette));
-            world.add(make_shared<sphere>(point(x, y, z), random_double(0.6, 1.7), big_mat)); 
+            world.add(make_shared<sphere>(point(x, y, z), random_double(0.6, 1.3), big_mat)); 
         }
         else if (mat == 2){
             auto big_mat = make_shared<metal>(get_color(color_palette), 0.0);
-            world.add(make_shared<sphere>(point(x, y, z), random_double(0.6, 1.7), big_mat)); 
+            world.add(make_shared<sphere>(point(x, y, z), random_double(0.6, 1.3), big_mat)); 
         }
         else{
             auto big_mat = make_shared<glass>(1.5);
-            world.add(make_shared<sphere>(point(x, y, z), random_double(0.6, 1.7), big_mat)); 
+            world.add(make_shared<sphere>(point(x, y, z), random_double(0.6, 1.3), big_mat)); 
         }
- 
     }
+
 
     return world;
 }
@@ -280,7 +270,7 @@ void calculate_pixel(const int num_samples, camera* cam, entity_list* world, int
 
         try{
             IMAGE_STORE[j][i] = pixel_color;
-            cout << pixel_color[0] << pixel_color[1] << pixel_color[2] << endl;
+            cout << pixel_color[0] << " " << pixel_color[1] << " " << pixel_color[2] << endl;
         }
         catch(int ja){
             std::cerr << j << ' ' << i;
