@@ -132,8 +132,8 @@ entity_list random_scene(vector<pixel> & color_palette) {
         auto ground_material = make_shared<metal>(get_color(color_palette), 0.1);
         world.add(make_shared<sphere>(point(0,0, -1000), 1000, ground_material)); 
     }
-    for (int a = -12; a < 12; a++) {
-        for (int b = -12; b < 12; b++) {
+    for (int a = -13; a < 13; a++) {
+        for (int b = -13; b < 13; b++) {
             auto choose_mat = random_double();
             triple center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
 
@@ -262,7 +262,6 @@ int main() {
     IMAGE_STORE.resize(image_height, vec_width);
     std::cerr << IMAGE_STORE.size();
     std::cerr << " " << IMAGE_STORE[0].size();
-
     //start 12 worker threads
     for(int i = 0; i < 12; i++){
         thread temp = thread(calculate_pixel, num_samples, &cam, &world, 
