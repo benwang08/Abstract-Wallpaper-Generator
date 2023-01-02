@@ -5,8 +5,8 @@ Generate cool abstract wallpaper from an input image.
   
 Requirements:  
 ---
-  *g++ v9 or newer
-  *make
+  * g++ v9 or newer
+  * make
 
 Instructions:  
 ---
