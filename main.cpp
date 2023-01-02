@@ -124,11 +124,10 @@ entity_list random_scene(vector<pixel> & color_palette) {
 
 
     int mat = get_material();
-    pixel light_color = get_color(color_palette) * 1.6;
+    pixel light_color = get_color(color_palette) + pixel(2,2,2);
     for (int i =0 ; i < 3; i++){
-        if (light_color[i] > 1){
-            light_color.mod_value(i) = 1;
-        }
+        light_color.mod_value(i) = light_color[i] / 3;
+
     }
     if (mat == 1){
         auto ground_material = make_shared<diffuse>(light_color);
