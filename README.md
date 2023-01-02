@@ -19,17 +19,17 @@ Program reads and writes in .ppm format. Imagemagick can be used to easily conve
 ```
 To run: 
 ```
-  $ Make all
+  $ make all
 ```
 Scan takes in 3 arguments (img source, output wallpaper width, output wallpaper height) and produces two files ("color_palette.ppm" and "data.txt")
 Example with output image resolution 1920x1080:
 ```
-  $ ./Scan INPUT_IMG.ppm 1920 1080
+  $ ./scan INPUT_IMG.ppm 1920 1080
 ```
 Generator takes in 0 arguments and uses created "data.txt" to render a random abstract wallpaper
 Produces file called "Wallpaper.ppm"
 ```
-  $ ./Generator
+  $ ./generator
 ```
 
 
