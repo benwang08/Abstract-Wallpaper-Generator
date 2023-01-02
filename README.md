@@ -2,6 +2,8 @@
 Description:  
 ---
 Generate cool abstract wallpaper from an input image.
+3D images generated with ray tracing and anti-alising with various approximations for matte, glass, and metal materials.
+
   
 Requirements:  
 ---
