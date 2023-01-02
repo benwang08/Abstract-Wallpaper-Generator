@@ -124,12 +124,18 @@ entity_list random_scene(vector<pixel> & color_palette) {
 
 
     int mat = get_material();
+    pixel light_color = get_color(color_palette) * 1.6;
+    for (int i =0 ; i < 3; i++){
+        if (light_color[i] > 1){
+            light_color.mod_value(i) = 1;
+        }
+    }
     if (mat == 1){
-        auto ground_material = make_shared<diffuse>(get_color(color_palette));
+        auto ground_material = make_shared<diffuse>(light_color);
         world.add(make_shared<sphere>(point(0, -1000,0), 1000, ground_material)); 
     }
     if (mat == 2){
-        auto ground_material = make_shared<metal>(get_color(color_palette), 0.1);
+        auto ground_material = make_shared<metal>(light_color, 0.1);
         world.add(make_shared<sphere>(point(0,0, -1000), 1000, ground_material)); 
     }
     for (int a = -13; a < 13; a++) {
