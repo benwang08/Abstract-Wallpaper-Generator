@@ -1,2 +1,2 @@
-# Abstract-Wallpaper-Generator
+# Wallpaper Generator
 Generate cool abstract wallpapers from an input image
