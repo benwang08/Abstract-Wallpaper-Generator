@@ -8,7 +8,7 @@ Generate cool abstract wallpaper from an input image.
 Example:
 | Input | Color Palette | Wallpaper |
 | :---:   | :---: | :---: |
-| ![image](https://user-images.githubusercontent.com/73961415/210298565-fd2054d8-4215-4b84-8036-c3b55d2e0bbb.png) | ![image](https://user-images.githubusercontent.com/73961415/210298579-f69e1050-ea53-4bd1-baf3-a7a2e3040019.png) | ![image](https://user-images.githubusercontent.com/73961415/210298589-ed4c5ef2-2bee-4230-b726-cb8f4aa4e57f.png) |
+| ![image](https://user-images.githubusercontent.com/73961415/210298565-fd2054d8-4215-4b84-8036-c3b55d2e0bbb.png) |![image](https://user-images.githubusercontent.com/73961415/210298644-9e3a1ff6-023e-42fb-8460-5798a2cd3624.png) | ![image](https://user-images.githubusercontent.com/73961415/210298589-ed4c5ef2-2bee-4230-b726-cb8f4aa4e57f.png) |
   
 Requirements:  
 ---
