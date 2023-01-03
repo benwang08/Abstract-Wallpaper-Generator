@@ -33,10 +33,13 @@ Example with output image resolution 1920x1080:
 ```
   $ ./scan INPUT_IMG.ppm 1920 1080
 ```
-Image takes in 0 arguments and uses created "data.txt" to render a random abstract wallpaper
-Produces file called "Wallpaper.jpg"
+generator takes in 0 arguments and uses created "data.txt" to render a random abstract wallpaper
+Produces file called "Wallpaper.ppm"
 ```
-  $ ./image
+  $ ./generator
+  
+  # To convert to jpg with imagemagick
+  $ convert wallpaper.ppm wallpaper.jpg
 ```
 
 
