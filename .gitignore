@@ -1,4 +1,7 @@
 *.o
 *.ppm
 generator
-
+scan
+*.jpg
+*.jpeg
+*.txt

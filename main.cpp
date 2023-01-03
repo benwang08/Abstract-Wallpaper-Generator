@@ -1,12 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <iostream>
-#include "utility.h"
-#include "material.h"
-#include "ray.h"
-#include "entity_list.h"
-#include "sphere.h"
-#include "camera.h"
+#include "gen_classes/utility.h"
+#include "gen_classes/material.h"
+#include "gen_classes/ray.h"
+#include "gen_classes/entity_list.h"
+#include "gen_classes/sphere.h"
+#include "gen_classes/camera.h"
 #include <fstream>
 #include <unordered_map>
 #include <thread>
@@ -135,21 +135,21 @@ entity_list random_scene(vector<pixel> & color_palette) {
     }
     if (mat == 2){
         auto ground_material = make_shared<metal>(light_color, 0.1);
-        world.add(make_shared<sphere>(point(0,0, -1000), 1000, ground_material)); 
+        world.add(make_shared<sphere>(point(0,-1000, 0), 1000, ground_material)); 
     }
-    for (int a = -13; a < 13; a++) {
-        for (int b = -13; b < 13; b++) {
+    for (int a = -13; a < 14; a++) {
+        for (int b = -13; b < 14; b++) {
             auto choose_mat = random_double();
-            triple center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
+            triple center(a + 0.9*random_double(), 0.2 + 0.1*random_double(), b + 0.9*random_double());
 
-            if ((center - triple(4, 0.2, 0)).length() > 0.9) {
+            if ((center - triple(4, 0.2, 0)).length() > 0.8) {
                 shared_ptr<material> sphere_material;
                 double rad = random_double(0.1 ,0.3);
-                if (choose_mat < 0.8) {
+                if (choose_mat < 0.7) {
                     // diffuse
                     auto sphere_mat = make_shared<diffuse>(get_color(color_palette));
                     world.add(make_shared<sphere>(center, rad, sphere_mat));
-                } else if (choose_mat < 0.95) {
+                } else if (choose_mat < 0.85) {
                     // metal
                     auto fuzz = random_double(0, 0.7);
                     auto sphere_mat = make_shared<metal>(get_color(color_palette), fuzz);
@@ -254,7 +254,7 @@ int main() {
     triple vup(0,1,0);
     auto dist_to_focus = 10.0;
     auto aperture = 0.1;
-    int zoom = random_double (15,25);
+    int zoom = random_double (15,30);
 
     camera cam(lookfrom, lookat, vup, zoom, aspect_ratio, aperture, dist_to_focus);
 

@@ -1,32 +1,26 @@
 CC = g++
 CFLAGS = -g  
 
-
 all: generator scan
 
 generator: main.o triple.o entity_list.o sphere.o
 	$(CC) $(CFLAGS) -o generator main.o -lpthread triple.o entity_list.o sphere.o
 
-image: generator scan
-	./generator > image.ppm
-	xdg-open image.ppm
-
-main.o: main.cpp ray.h triple.h
+main.o: main.cpp gen_classes/ray.h gen_classes/triple.h
 	$(CC) $(CFLAGS) -c main.cpp
 
-triple.o: triple.cpp triple.h 
-	$(CC) $(CFLAGS) -c triple.cpp
+triple.o: gen_classes/triple.cpp gen_classes/triple.h 
+	$(CC) $(CFLAGS) -c gen_classes/triple.cpp
 
-sphere.o: sphere.cpp sphere.h
-	$(CC) $(CFLAGS) -c sphere.cpp
+sphere.o: gen_classes/sphere.cpp gen_classes/sphere.h
+	$(CC) $(CFLAGS) -c gen_classes/sphere.cpp
 
-entity_list.o: entity_list.cpp entity_list.h
-	$(CC) $(CFLAGS) -c entity_list.cpp
+entity_list.o: gen_classes/entity_list.cpp gen_classes/entity_list.h
+	$(CC) $(CFLAGS) -c gen_classes/entity_list.cpp
 
 scan: scan.cpp
 	$(CC) $(CFLAGS) -o scan scan.cpp
 
-	
 clean: 
-	-rm -f generator main.o triple.o sphere.o entity_list.o image.ppm scan data.txt test.ppm
+	-rm -f generator *.o wallpaper.ppm scan data.txt *.ppm
 
