@@ -5,3 +5,5 @@ scan
 *.jpg
 *.jpeg
 *.txt
+.vscode
+*.webp
