@@ -36,7 +36,7 @@ Example with output image resolution 1920x1080:
 Image takes in 0 arguments and uses created "data.txt" to render a random abstract wallpaper
 Produces file called "Wallpaper.jpg"
 ```
-  $ ./Image
+  $ ./image
 ```
 
 
