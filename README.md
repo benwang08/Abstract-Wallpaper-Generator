@@ -1,5 +1,5 @@
 # Wallpaper Generator
-![image](https://user-images.githubusercontent.com/73961415/210931609-5bcdcace-4de8-44ff-8fe0-4719f952e7c0.png | width = 200)
+![image](https://user-images.githubusercontent.com/73961415/210931609-5bcdcace-4de8-44ff-8fe0-4719f952e7c0.png  =400x400)
 
 Description:  
 ---
